@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import { EmailList } from '../features/emails/components/EmailList';
 import { SideMenuDrawer } from '../features/emails/components/SideMenuDrawer';
 
 function Inbox(props: any) {
@@ -7,6 +8,9 @@ function Inbox(props: any) {
             <Grid container>
                 <Grid item xs={2}>
                     <SideMenuDrawer />
+                </Grid>
+                <Grid item xs={10}>
+                    <EmailList />
                 </Grid>
             </Grid>
         </>
