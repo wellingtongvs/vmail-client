@@ -5,6 +5,8 @@ import { Login } from './pages/Login';
 import { Inbox } from './pages/Inbox';
 import { ApolloProvider } from '@apollo/client';
 import { client } from './lib/ApolloClient';
+import { Provider } from 'react-redux';
+import store from './lib/store';
 
 const AppContainer = styled.div`
     width: 100%;
@@ -15,10 +17,12 @@ function App() {
     return (
         <AppContainer>
             <ApolloProvider client={client}>
-                <Routes>
-                    <Route path="/" element={<Inbox />}></Route>
-                    <Route path="/login" element={<Login />}></Route>
-                </Routes>
+                <Provider store={store}>
+                    <Routes>
+                        <Route path="/" element={<Inbox />}></Route>
+                        <Route path="/login" element={<Login />}></Route>
+                    </Routes>
+                </Provider>
             </ApolloProvider>
         </AppContainer>
     );
