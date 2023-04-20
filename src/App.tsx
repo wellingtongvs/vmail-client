@@ -3,10 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { Login } from './pages/Login';
 import { Inbox } from './pages/Inbox';
-import { ApolloProvider } from '@apollo/client';
-import { client } from './lib/ApolloClient';
-import { Provider } from 'react-redux';
-import store from './lib/store';
+import { Signup } from './pages/Signup';
+import { RequireAuth } from 'react-auth-kit';
+import { LoadingOverlay } from './components/LoadingOverlay';
 
 const AppContainer = styled.div`
     width: 100%;
@@ -16,14 +15,19 @@ const AppContainer = styled.div`
 function App() {
     return (
         <AppContainer>
-            <ApolloProvider client={client}>
-                <Provider store={store}>
-                    <Routes>
-                        <Route path="/" element={<Inbox />}></Route>
-                        <Route path="/login" element={<Login />}></Route>
-                    </Routes>
-                </Provider>
-            </ApolloProvider>
+            <LoadingOverlay />
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <RequireAuth loginPath="/login">
+                            <Inbox />
+                        </RequireAuth>
+                    }
+                ></Route>
+                <Route path="/signup" element={<Signup />}></Route>
+                <Route path="/login" element={<Login />}></Route>
+            </Routes>
         </AppContainer>
     );
 }

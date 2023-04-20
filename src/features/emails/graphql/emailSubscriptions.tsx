@@ -5,6 +5,7 @@ export const EMAILS_DRAFT_ADDED_SUBSCRIPTION = gql`
         emailDraftAdded {
             id
             sender
+            subject
             recipient
             isDraft
             isSent

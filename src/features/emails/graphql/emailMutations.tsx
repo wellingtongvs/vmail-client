@@ -11,6 +11,9 @@ export const EMAILS_SEND_EMAIL_MUTATION = gql`
             isDraft
             isSent
             isTrash
+            createdAt
+            sentAt
+            copyOwnerId
         }
     }
 `;
@@ -26,6 +29,9 @@ export const EMAILS_TRASH_EMAIL_MUTATION = gql`
             isDraft
             isSent
             isTrash
+            createdAt
+            sentAt
+            copyOwnerId
         }
     }
 `;
@@ -41,27 +47,29 @@ export const EMAILS_DELETE_EMAIL_MUTATION = gql`
             isDraft
             isSent
             isTrash
-        }
-    }
-`;
-
-export const EMAILS_CREATE_DRAFT_MUTATION = gql`
-    mutation CreateDraft($sender: String!, ) {
-        saveEmail(input: { sender: $sender } }) {
-            id
-            sender
-            recipient
-            isDraft
-            isSent
-            isTrash
+            createdAt
+            sentAt
+            copyOwnerId
         }
     }
 `;
 
 export const EMAILS_UPDATE_DRAFT_MUTATION = gql`
-    mutation UpdateDraft {
+    mutation UpdateDraft(
+        $id: String
+        $sender: String
+        $recipient: String
+        $subject: String
+        $body: String
+    ) {
         updateEmail(
-            input: { recipient: String, subject: String, body: String }
+            updateEmailInput: {
+                id: $id
+                sender: $sender
+                recipient: $recipient
+                subject: $subject
+                body: $body
+            }
         ) {
             id
             sender
@@ -71,6 +79,9 @@ export const EMAILS_UPDATE_DRAFT_MUTATION = gql`
             isDraft
             isSent
             isTrash
+            createdAt
+            sentAt
+            copyOwnerId
         }
     }
 `;

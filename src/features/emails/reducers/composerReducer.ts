@@ -15,9 +15,12 @@ const composerSlice = createSlice({
         toggleComposer: (state) => {
             state.composerOpen = !state.composerOpen;
         },
+        setComposerStatus: (state, action: PayloadAction<boolean>) => {
+            state.composerOpen = action.payload;
+        },
     },
 });
 
-export const { toggleComposer } = composerSlice.actions;
+export const { toggleComposer, setComposerStatus } = composerSlice.actions;
 
 export default composerSlice.reducer;

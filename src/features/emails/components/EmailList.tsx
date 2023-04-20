@@ -10,7 +10,6 @@ import {
     ListItemIcon,
     ListItemText,
     Typography,
-    Divider,
     capitalize,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -20,49 +19,54 @@ import {
     EMAILS_DRAFT_ADDED_SUBSCRIPTION,
     EMAILS_EMAIL_TRASHED_SUBSCRIPTION,
 } from '../graphql/emailSubscriptions';
-import { Create, MailOutline } from '@mui/icons-material';
+import { MailOutline } from '@mui/icons-material';
 
 function EmailList() {
     const [emails, setEmails] = useState<any[]>([]);
     const activeTab = useSelector((state: any) => state.tab.activeTab);
+    const email = useSelector((state: any) => state.user.userEmail);
 
     let params: any = {
-        sender: 'abc@email.com',
-        isSent: activeTab == TabValue.SENT,
-        isDraft: activeTab == TabValue.DRAFTS,
-        isTrash: activeTab == TabValue.TRASH,
+        sender: email,
+        isSent: activeTab === TabValue.SENT,
+        isDraft: activeTab === TabValue.DRAFTS,
+        isTrash: activeTab === TabValue.TRASH,
     };
 
-    /* Remove value since it's not necessary */
     let subscription = [TabValue.INBOX, TabValue.SENT].includes(activeTab)
         ? EMAILS_EMAIL_SENT_SUBSCRIPTION
-        : activeTab == TabValue.DRAFTS
+        : activeTab === TabValue.DRAFTS
         ? EMAILS_DRAFT_ADDED_SUBSCRIPTION
         : EMAILS_EMAIL_TRASHED_SUBSCRIPTION;
+
+    /* Remove value since it's not necessary */
     if ([TabValue.TRASH, TabValue.INBOX].includes(activeTab)) {
         delete params.isSent;
+    }
+    if (activeTab === TabValue.INBOX) {
+        delete params.sender;
+        params.recipient = email;
     }
 
     const { loading, data } = useQuery(EMAILS_LIST_QUERY(params));
     const { data: subscriptionData } = useSubscription(subscription);
 
     useEffect(() => {
-        const mergedData = [];
         if (subscriptionData) {
             const newEmailKey = Object.keys(subscriptionData)[0];
             const newEmail = subscriptionData[newEmailKey];
             if (newEmail) {
-                mergedData.push(newEmail);
+                setEmails([newEmail, ...emails]);
             }
         }
-        if (data) {
-            mergedData.push(...data.emails.emails);
-        }
-        console.log(subscriptionData);
-        setEmails([...mergedData]);
-    }, [data, subscriptionData]);
+    }, [subscriptionData]);
 
-    console.log(subscriptionData);
+    useEffect(() => {
+        if (data) {
+            setEmails([...data.emails.emails]);
+        }
+    }, [data]);
+
     return (
         <>
             {loading ? (

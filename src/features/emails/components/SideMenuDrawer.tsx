@@ -12,16 +12,34 @@ import {
     DeleteOutline,
     DraftsOutlined,
     CreateOutlined,
+    LogoutOutlined,
 } from '@mui/icons-material';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveTab } from '../reducers/tabReducer';
-import { toggleComposer } from '../reducers/composerReducer';
+import { setComposerStatus, toggleComposer } from '../reducers/composerReducer';
 import { TabValue } from '../types/TabValue';
+import { useSignOut } from 'react-auth-kit';
+import { useNavigate } from 'react-router-dom';
+import { setLoading } from '../../../reducers/loadingReducer';
+import { setEmailId } from '../reducers/emailIdReducer';
 
-function SideMenuDrawer(props: any) {
+function SideMenuDrawer() {
     const activeTab = useSelector((state: any) => state.tab.activeTab);
     const dispatch = useDispatch();
+    const signOut = useSignOut();
+    const navigate = useNavigate();
+
+    const userLogout = () => {
+        dispatch(setComposerStatus(false));
+        dispatch(setLoading(true));
+        dispatch(setEmailId(undefined));
+        navigate('/login');
+        signOut();
+        setTimeout(() => {
+            dispatch(setLoading(false));
+        }, 250);
+    };
 
     const setActiveTabInbox = useCallback(() => {
         dispatch(setActiveTab(TabValue.INBOX));
@@ -40,7 +58,7 @@ function SideMenuDrawer(props: any) {
     }, [dispatch]);
 
     const toggleComposerOpen = useCallback(() => {
-        dispatch(toggleComposer(undefined));
+        dispatch(toggleComposer());
     }, [dispatch]);
 
     const listItems = [
@@ -72,6 +90,12 @@ function SideMenuDrawer(props: any) {
         action: toggleComposerOpen,
     };
 
+    const logout = {
+        name: 'Logout',
+        icon: <LogoutOutlined />,
+        action: userLogout,
+    };
+
     return (
         <>
             <Drawer
@@ -96,7 +120,7 @@ function SideMenuDrawer(props: any) {
                         <ListItemButton
                             key={index}
                             onClick={item.action}
-                            selected={activeTab == item.value}
+                            selected={activeTab === item.value}
                         >
                             <ListItemIcon>{item.icon}</ListItemIcon>
                             <ListItemText
@@ -104,6 +128,13 @@ function SideMenuDrawer(props: any) {
                             />
                         </ListItemButton>
                     ))}
+                </div>
+                <div>
+                    <Divider />
+                    <ListItemButton key={logout.name} onClick={logout.action}>
+                        <ListItemIcon>{logout.icon}</ListItemIcon>
+                        <ListItemText primary={logout.name}></ListItemText>
+                    </ListItemButton>
                 </div>
             </Drawer>
         </>

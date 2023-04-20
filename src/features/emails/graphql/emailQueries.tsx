@@ -12,15 +12,16 @@ export const EMAILS_LIST_QUERY = (filters: any) => {
     return gql`
   query {
     emails (filters: {${queryFilters}} ) {
-      emails {
-        id,
-        sender,
-        recipient,
-        isDraft,
-        isSent,
-        isTrash
-      },
-      hasMore 
+      id,
+      sender,
+      subject
+      recipient,
+      isDraft,
+      isSent,
+      isTrash,
+      sentAt,
+      createdAt,
+      copyOwnerId
     }
   }
   `;
