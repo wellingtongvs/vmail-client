@@ -10,20 +10,24 @@ import {
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { USERS_CREATE_AUTH_MUTATION } from '../features/authentication/graphql/userMutations';
+import {
+    USERS_CREATE_USER_MUTATION,
+    USERS_CREATE_AUTH_MUTATION,
+} from '../features/authentication/graphql/userMutations';
 import { useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
 import { useIsAuthenticated, useSignIn } from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from '../features/authentication/reducers/userReducer';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '../reducers/loadingReducer';
 
-function Login() {
+function Signup() {
     const signIn = useSignIn();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isAuthenticated = useIsAuthenticated();
+
     const loading = useSelector((state: any) => state.loading.isLoading);
 
     useEffect(() => {
@@ -45,10 +49,17 @@ function Login() {
     } = useForm();
     const [serverError, setServerError] = useState('');
 
+    const [createUser] = useMutation(USERS_CREATE_USER_MUTATION);
     const [login] = useMutation(USERS_CREATE_AUTH_MUTATION);
 
     const onSubmit = async (data: any) => {
         try {
+            await createUser({
+                variables: {
+                    email: data.email,
+                    password: data.password,
+                },
+            });
             const result = await login({
                 variables: {
                     email: data.email,
@@ -91,7 +102,7 @@ function Login() {
                             sx={{ pb: 2 }}
                             align="center"
                         >
-                            Login
+                            Signup
                         </Typography>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Grid container spacing={1}>
@@ -138,7 +149,7 @@ function Login() {
                                 ) : (
                                     ''
                                 )}
-                                <Grid item xs={12} sx={{ pb: 2 }}>
+                                <Grid item xs={12}>
                                     <Stack
                                         direction="row"
                                         justifyContent="center"
@@ -148,22 +159,6 @@ function Login() {
                                             type="submit"
                                             variant="outlined"
                                             style={{ padding: '14px 50px' }}
-                                        >
-                                            Login
-                                        </LoadingButton>
-                                    </Stack>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Stack
-                                        direction="row"
-                                        justifyContent="center"
-                                    >
-                                        <LoadingButton
-                                            color="secondary"
-                                            type="submit"
-                                            variant="outlined"
-                                            style={{ padding: '14px 50px' }}
-                                            onClick={() => navigate('/signup')}
                                         >
                                             Signup
                                         </LoadingButton>
@@ -178,4 +173,4 @@ function Login() {
     );
 }
 
-export { Login };
+export { Signup };
